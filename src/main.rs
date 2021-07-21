@@ -12,9 +12,7 @@ lazy_static! {
 fn main() -> Result<()> {
     check(format!("{}\\{}", *BASE_PATH, *INI_FILE).as_str())?;
 
-    if let Ok(_) = check(format!("{}\\{}_orig", *BASE_PATH, *INI_FILE).as_str()) {
-        ()
-    } else {
+    if check(format!("{}\\{}_orig", *BASE_PATH, *INI_FILE).as_str()).is_ok() {
         backup(format!("{}\\{}", *BASE_PATH, *INI_FILE).as_str())?;
     };
 
