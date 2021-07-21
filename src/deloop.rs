@@ -1,4 +1,6 @@
 
+use std::{collections::HashMap, path::Path};
+
 use anyhow::Result;
 use configparser::ini::Ini;
 use crate::{BASE_PATH,INI_FILE};
@@ -39,6 +41,18 @@ fn backup(path: &str) -> Result<()> {
         std::path::Path::new(format!("{}_orig", path).as_str()),
     )?;
     Ok(())
+}
+
+pub fn load_ini(path:&Path)->Result<HashMap<String, HashMap<String, Option<String>>>>{
+    let mut config = Ini::new();
+    // let map = config.load(path)?;
+    let map = match config.load(path) {
+        Ok(map) => map,
+        Err(e) => {
+            anyhow::bail!(e)
+        }
+    };
+    Ok(map)
 }
 
 #[cfg(test)]
