@@ -1,5 +1,4 @@
-
-use std::{collections::HashMap};
+use std::collections::HashMap;
 
 use eframe::{
     egui::{self, Color32},
@@ -12,6 +11,7 @@ pub struct App {
     root_dir: String,
     backed_up: bool,
     data: Option<HashMap<String, HashMap<String, Option<String>>>>,
+    show_advanced: bool,
 }
 
 impl Default for App {
@@ -20,6 +20,7 @@ impl Default for App {
             backed_up: false,
             root_dir: crate::BASE_PATH.clone().to_owned(),
             data: None,
+            show_advanced: false,
         }
     }
 }
@@ -71,33 +72,36 @@ impl epi::App for App {
                     let c = format!("{}\\{}", self.root_dir.clone(), crate::INI_FILE.clone());
                     let p = std::path::Path::new(&c);
                     let data = deloop::load_ini(p).unwrap();
-                    // dbg!(&data);
                     self.data = Some(data);
                 }
-                match &self.data {
-                    Some(data) => {
-                        for (header, props) in data {
-                            ui.collapsing(header, |ui| {
-                                // egui::ScrollArea::auto_sized().show(ui, |ui| {
-                                egui::Grid::new("Properties")
-                                    .striped(true)
-                                    .min_col_width(10.0)
-                                    .max_col_width(200.0)
-                                    .show(ui, |ui| {
-                                        for (k, v) in props {
-                                            ui.label(k);
-                                            ui.label(match v {
-                                                Some(v) => v.clone(),
-                                                _ => "".to_string(),
-                                            });
-                                            ui.end_row();
-                                        }
-                                    });
-                                // });
-                            });
+                if self.show_advanced {
+                    match &self.data {
+                        Some(data) => {
+                            for (header, props) in data {
+                                ui.collapsing(header, |ui| {
+                                    // egui::ScrollArea::auto_sized().show(ui, |ui| {
+                                    egui::Grid::new("Properties")
+                                        .striped(true)
+                                        .min_col_width(10.0)
+                                        .max_col_width(200.0)
+                                        .show(ui, |ui| {
+                                            for (k, v) in props {
+                                                ui.label(k);
+                                                ui.label(match v {
+                                                    Some(v) => v.clone(),
+                                                    _ => "".to_string(),
+                                                });
+                                                ui.end_row();
+                                            }
+                                        });
+                                    // });
+                                });
+                            }
                         }
+                        _ => (),
                     }
-                    _ => (),
+                } else {
+                    //Todo add qyuick toggles
                 }
             });
         });
